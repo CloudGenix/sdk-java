@@ -15,6 +15,7 @@ For issues, please contact joel@cloudgenix.com.
 ## Outstanding Items
 - Several classes contain members with generic types, which will require casting prior to use in consuming code.  This can be fixed with additional details on the object model from engineering
 - Parameters in query bodies are currently strings when they should be enumerations
+- Failed APIs return null given Java's lack of support for out and ref parameters without serious Java-foo/code gymnastics/ugly methods.  A more appropriate design would mirror those used by the C# SDK
 
 ## Quickstart
 Refer to the Test project for a full examination of consuming the SDK.  The SDK can be initialized and instantiated rather quickly:
