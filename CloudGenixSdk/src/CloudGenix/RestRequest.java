@@ -1,3 +1,19 @@
+/*
+
+    CloudGenix Controller SDK
+    (c) 2017 CloudGenix, Inc.
+    All Rights Reserved
+
+    https://www.cloudgenix.com
+
+    This SDK is released under the MIT license.
+    For support, please contact us on:
+
+        NetworkToCode Slack channel #cloudgenix: http://slack.networktocode.com
+        Email: developers@cloudgenix.com
+
+ */
+
 package CloudGenix;
 
 import org.apache.http.HttpResponse;
@@ -14,11 +30,6 @@ import org.apache.http.Header;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.params.ClientPNames;
-import org.apache.http.client.params.CookiePolicy;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.params.HttpParams;
 
 @SuppressWarnings({ "unused" })
 public class RestRequest
