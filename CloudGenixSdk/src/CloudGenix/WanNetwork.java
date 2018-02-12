@@ -22,6 +22,9 @@ public class WanNetwork
 {
     @SerializedName("id")
     public String id;
+
+    @SerializedName("_etag")
+    public int etag;
     
     @SerializedName("name")
     public String name;

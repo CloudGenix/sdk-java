@@ -22,8 +22,11 @@ import java.util.List;
 public class ApplicationDefinition 
 {
     @SerializedName("id")
-    public String Id;
+    public String id;
 
+    @SerializedName("_etag")
+    public int etag;
+    
     @SerializedName("ingress_traffic_pct")
     public int ingressTrafficPercent;
 

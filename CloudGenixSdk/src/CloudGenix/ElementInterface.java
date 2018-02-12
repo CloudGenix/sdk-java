@@ -24,6 +24,9 @@ public class ElementInterface
     @SerializedName("id")
     public String id;
 
+    @SerializedName("_etag")
+    public int etag;
+
     @SerializedName("type")
     public String type;
 

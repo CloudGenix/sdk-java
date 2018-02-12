@@ -24,6 +24,9 @@ public class Element
     @SerializedName("id")
     public String id;
 
+    @SerializedName("_etag")
+    public int etag;
+
     @SerializedName("software_version")
     public String softwareVersion;
 

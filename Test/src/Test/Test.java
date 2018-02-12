@@ -595,5 +595,4 @@ public class Test
  
         eventQuery = new EventQuery(startTime, endTime, offset, queryType, summary); 
     }
-
 }

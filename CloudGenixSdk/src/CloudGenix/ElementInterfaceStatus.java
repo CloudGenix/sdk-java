@@ -24,6 +24,9 @@ public class ElementInterfaceStatus
     @SerializedName("id")
     public String id;
 
+    @SerializedName("_etag")
+    public int etag;
+
     @SerializedName("region")
     public String region;
 

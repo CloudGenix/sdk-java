@@ -22,6 +22,9 @@ public class SnmpAgent
 {
     @SerializedName("id")
     public String id;
+
+    @SerializedName("_etag")
+    public int etag;
      
     @SerializedName("tags")
     public Object tags;

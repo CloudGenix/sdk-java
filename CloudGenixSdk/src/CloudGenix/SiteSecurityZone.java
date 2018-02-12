@@ -23,6 +23,9 @@ public class SiteSecurityZone
     @SerializedName("id")
     public String id;
 
+    @SerializedName("_etag")
+    public int etag;
+
     @SerializedName("zone_id")
     public String zoneId;
 
