@@ -42,7 +42,7 @@ public class EndpointManager {
         addVersion("logout", "v2.0");
         addVersion("permissions", "v2.0");
         addVersion("profile", "v2.0");
-        addVersion("query_events", "v2.0");
+        addVersion("query_events", "v3.0");
         
         addEndpoint("login", "/%s/api/login");
         addEndpoint("logout", "/%s/api/logout");

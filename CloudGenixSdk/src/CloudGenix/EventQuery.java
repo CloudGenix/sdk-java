@@ -26,13 +26,13 @@ public class EventQuery
     public List<String> severity;
 
     @SerializedName("query")
-    public QueryType query;
+    public QueryParams query;
 
     @SerializedName("_offset")
     public String offset;
 
-    @SerializedName("summary")
-    public Boolean summary;
+    @SerializedName("view")
+    public ViewParams view;
 
     @SerializedName("start_time")
     public String startTime;
@@ -42,7 +42,7 @@ public class EventQuery
  
     public EventQuery()
     {
-        query = new QueryType();
+        query = new QueryParams();
         severity = new ArrayList<>();
     }
 
@@ -51,26 +51,46 @@ public class EventQuery
         this.startTime = startTime;
         this.endTime = endTime;
         this.offset = offset;
-        this.summary = summary;
-        this.query = new QueryType();
+        this.query = new QueryParams();
+        
         this.severity = new ArrayList<>();
-
+        this.severity.add("critical");
+        this.severity.add("major");
+        
+        this.view = new ViewParams();
+        
         if (!stringNullOrEmpty(queryType)) query.type = queryType; 
 
         if (summary) 
         {
+            this.view.summary = true;
             this.query = null;
         }
     }
  
-    public class QueryType 
+    public class QueryParams 
     {
         @SerializedName("type")
         public String type;
 
-        public QueryType()
+        public QueryParams()
         {
             this.type = null;
+        } 
+    }
+
+    public class ViewParams 
+    {
+        @SerializedName("summary")
+        public Boolean summary;
+
+        @SerializedName("individual")
+        public String individual;
+        
+        public ViewParams()
+        {
+            this.summary = true;
+            this.individual = "code";
         } 
     }
 
