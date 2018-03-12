@@ -1,7 +1,7 @@
 /*
 
     CloudGenix Controller SDK
-    (c) 2017 CloudGenix, Inc.
+    (c) 2019 CloudGenix, Inc.
     All Rights Reserved
 
     https://www.cloudgenix.com

@@ -9,7 +9,7 @@ For issues, please contact joel@cloudgenix.com or open a support ticket with dev
 The CloudGenix Controller is only accessible to CloudGenix customers with a valid login using an IP address that has been whitelisted.  Please contact us at one of the aforementioned methods if you need to have your IP addresses whitelisted.
 
 ## New
-- Etag in resource objects
+- SAML login support using ```loginSamlStart()``` and ```loginSamlFinish()```
 
 ## Outstanding Items
 - Several classes contain members with generic types, which will require casting prior to use in consuming code.  This can be fixed with additional details on the object model from engineering
@@ -33,9 +33,10 @@ if (sites == null) { // error } else { // handle data }
 ## Version History
 Notes from previous versions (starting with v1.0.0) will be moved here.
 
-v1.0.0
+v1.0.x
 - Initial release
 - Authentication, profile retrieval, and dynamic URL building (including API version) with override support
 - Includes GET APIs for tenant, elements, sites, interfaces, WANs, LANs, application definitions, policy sets, policy rules, security zones, security policy sets, and security policy rules
 - Includes POST APIs to retrieve metrics data, top N data, and flow records
 - Basic API infrastructure and plumbing
+- Etag in resource objects

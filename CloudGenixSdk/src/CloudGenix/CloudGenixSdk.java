@@ -1,7 +1,7 @@
 /*
 
     CloudGenix Controller SDK
-    (c) 2017 CloudGenix, Inc.
+    (c) 2018 CloudGenix, Inc.
     All Rights Reserved
 
     https://www.cloudgenix.com
@@ -41,6 +41,7 @@ public class CloudGenixSdk
     
     // <editor-fold desc="Private Members">
     
+    private String samlRequestId;
     private EndpointManager endpoints;
     private HashMap<String, String> authHeaders;
     
@@ -61,9 +62,21 @@ public class CloudGenixSdk
         
         this.endpoints = new EndpointManager();
         
-        if (!login()) throw new Exception("Unable to login");
+        if (!loginInternal()) throw new Exception("Unable to login");
         if (!getProfile()) throw new Exception("Unable to retrieve tenant ID");
         if (!getEndpoints()) throw new Exception("Unable to retrieve endpoints");
+    }
+    
+    public CloudGenixSdk(String email, Boolean debug)
+    {
+        if (stringNullOrEmpty(email)) throw new NullPointerException("email must not be null");
+        
+        this.email = email; 
+        this.debug = debug;
+        this.endpoint = "https://api.cloudgenix.com:443";
+        this.authToken = "";
+        
+        this.endpoints = new EndpointManager(); 
     }
     
     // </editor-fold>
@@ -93,6 +106,85 @@ public class CloudGenixSdk
             return false;
         }
          
+        return true;
+    }
+    
+    public String loginSamlStart() throws IOException
+    { 
+        HashMap<String, String> loginRequest = new HashMap<String, String>();
+        loginRequest.put("email", this.email); 
+        
+        HashMap<String, String> headers = new HashMap<String, String>();
+        headers.put("Referer", this.endpoint + "/v2.0/api/login");
+
+        RestResponse resp = RestRequest.Send(
+            this.endpoint + endpoints.getEndpoint("login"), 
+            "POST",
+            "application/json",
+            headers,
+            serialize(loginRequest),
+            this.debug);
+        
+        if (resp == null) 
+        {
+            log("login no response from server");
+            throw new IOException("No response from server");
+        }
+        
+        if (resp.statusCode > 299) 
+        {
+            log("loginSamlStart failure status " + resp.statusCode + " returned from server");
+            log(serialize(resp));
+            throw new IOException("Failure status returned from server");
+        }
+        
+        Gson gson = new Gson(); 
+        LoginSamlResponse loginResp = gson.fromJson(resp.responseBody, LoginSamlResponse.class);
+        this.samlRequestId = loginResp.requestId;
+        
+        log("loginSamlStart returning URL " + loginResp.urlpath + " request ID " + loginResp.requestId);
+        return loginResp.urlpath;
+    }
+    
+    public Boolean loginSamlFinish() throws IOException, Exception
+    { 
+        HashMap<String, String> loginRequest = new HashMap<>();
+        loginRequest.put("email", this.email); 
+        loginRequest.put("requestId", this.samlRequestId);
+        
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("Referer", this.endpoint + "/v2.0/api/login");
+
+        RestResponse resp = RestRequest.Send(
+            this.endpoint + endpoints.getEndpoint("login"), 
+            "POST",
+            "application/json",
+            headers,
+            serialize(loginRequest),
+            this.debug);
+        
+        if (resp == null) 
+        {
+            log("login no response from server");
+            throw new IOException("No response from server");
+        }
+        
+        if (resp.statusCode > 299) 
+        {
+            log("loginSamlStart failure status " + resp.statusCode + " returned from server");
+            log(serialize(resp));
+            throw new IOException("Failure status returned from server");
+        }
+        
+        Gson gson = new Gson(); 
+        LoginResponse loginResp = gson.fromJson(resp.responseBody, LoginResponse.class);
+        this.authToken = loginResp.x_auth_token;
+        
+        this.authHeaders = new HashMap<>();
+        this.authHeaders.put("x-auth-token", this.authToken);
+        
+        if (!getProfile()) throw new Exception("Unable to retrieve tenant ID");
+        if (!getEndpoints()) throw new Exception("Unable to retrieve endpoints");
         return true;
     }
     
@@ -877,7 +969,7 @@ public class CloudGenixSdk
         return json;
     }
     
-    private Boolean login() throws IOException 
+    private Boolean loginInternal() throws IOException 
     {
         HashMap<String, String> loginRequest = new HashMap<String, String>();
         loginRequest.put("email", this.email);
