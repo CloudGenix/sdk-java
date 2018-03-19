@@ -49,7 +49,7 @@ public class CloudGenixSdk
     
     // <editor-fold desc="Constructors and Factories">
     
-    public CloudGenixSdk(String email, String password, Boolean debug) throws IOException, Exception 
+    public CloudGenixSdk(String email, String password, Boolean debug) throws IOException, Exception
     {
         if (stringNullOrEmpty(email)) throw new NullPointerException("email must not be null");
         if (stringNullOrEmpty(password)) throw new NullPointerException("password must not be null");
@@ -79,6 +79,19 @@ public class CloudGenixSdk
         this.endpoints = new EndpointManager(); 
     }
     
+    public CloudGenixSdk(String token, Boolean isToken, Boolean debug) throws IOException, Exception
+    {
+        if (stringNullOrEmpty(token)) throw new NullPointerException("token must not be null");
+        
+        this.authToken = token;
+        this.email = null;
+        this.password = null;
+        this.debug = debug;
+        this.endpoint = "https://api.cloudgenix.com:443";
+        
+        this.endpoints = new EndpointManager();
+    }
+    
     // </editor-fold>
     
     // <editor-fold desc="Public Methods">
@@ -106,6 +119,16 @@ public class CloudGenixSdk
             return false;
         }
          
+        return true;
+    }
+    
+    public Boolean loginWithToken() throws IOException, Exception
+    {
+        this.authHeaders = new HashMap<>();
+        this.authHeaders.put("x-auth-token", this.authToken);
+        
+        if (!getProfile()) throw new Exception("Unable to retrieve tenant ID");
+        if (!getEndpoints()) throw new Exception("Unable to retrieve endpoints");
         return true;
     }
     
