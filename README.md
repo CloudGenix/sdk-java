@@ -9,7 +9,7 @@ For issues, please contact joel@cloudgenix.com or open a support ticket with dev
 The CloudGenix Controller is only accessible to CloudGenix customers with a valid login using an IP address that has been whitelisted.  Please contact us at one of the aforementioned methods if you need to have your IP addresses whitelisted.
 
 ## New
-- Login with static authentication tokens.  Use constructor ```CloudGenixSdk(String token, true, Boolean debug)``` followed by ```CloudGenixSdk.loginWithToken()```.  Refer to project ```TokenTest``` for a working example
+- ```getAllEvents()``` method to retrieve all events
 
 ## Outstanding Items
 - Several classes contain members with generic types, which will require casting prior to use in consuming code.  This can be fixed with additional details on the object model from engineering
@@ -41,4 +41,5 @@ v1.0.x
 - Basic API infrastructure and plumbing
 - Etag in resource objects
 - SAML login support using ```loginSamlStart()``` and ```loginSamlFinish()```
+- Login with static authentication tokens.  Use constructor ```CloudGenixSdk(String token, true, Boolean debug)``` followed by ```CloudGenixSdk.loginWithToken()```.  Refer to project ```TokenTest``` for a working example
 

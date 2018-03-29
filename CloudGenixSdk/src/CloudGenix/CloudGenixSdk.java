@@ -67,6 +67,25 @@ public class CloudGenixSdk
         if (!getEndpoints()) throw new Exception("Unable to retrieve endpoints");
     }
     
+    public CloudGenixSdk(String email, String password, String endpoint, Boolean debug) throws IOException, Exception
+    {
+        if (stringNullOrEmpty(email)) throw new NullPointerException("email must not be null");
+        if (stringNullOrEmpty(password)) throw new NullPointerException("password must not be null");
+        if (stringNullOrEmpty(endpoint)) throw new NullPointerException("endpoint must not be null");
+        
+        this.email = email;
+        this.password = password;
+        this.debug = debug;
+        this.endpoint = endpoint;
+        this.authToken = "";
+        
+        this.endpoints = new EndpointManager();
+        
+        if (!loginInternal()) throw new Exception("Unable to login");
+        if (!getProfile()) throw new Exception("Unable to retrieve tenant ID");
+        if (!getEndpoints()) throw new Exception("Unable to retrieve endpoints");
+    }
+    
     public CloudGenixSdk(String email, Boolean debug)
     {
         if (stringNullOrEmpty(email)) throw new NullPointerException("email must not be null");
@@ -902,6 +921,57 @@ public class CloudGenixSdk
         Gson gson = new Gson();  
         EventResponse data = gson.fromJson(resp.responseBody, EventResponse.class); 
         return data;
+    }
+    
+    public EventResponse getAllEvents(EventQuery query) throws IOException
+    {
+        if (query == null) throw new NullPointerException("query must not be null");
+        
+        EventResponse events = null;
+        
+        while (true)
+        {
+            EventResponse currResponse = getEvents(query);
+            if (currResponse == null)
+            {
+                log("getEvents no response from server");
+                return null;
+            }
+            
+            if (events == null)
+            {
+                events = currResponse;
+                events.events = new ArrayList<>(); 
+            }
+            else
+            { 
+                if (events.events == null)
+                {
+                    events.events = new ArrayList<>();
+                }
+
+                if (currResponse.events != null && currResponse.events.size() > 0)
+                {
+                    for (EventResponse.EventDetails currEventDetails : currResponse.events) 
+                    {
+			events.events.add(currEventDetails);
+                    } 
+                    
+                    events.includedCount += currResponse.events.size();
+                    events.totalCount += currResponse.events.size();
+                }
+
+                if (!stringNullOrEmpty(currResponse.offset))
+                {
+                    query.offset = currResponse.offset;
+                }
+                else
+                {
+                    // end reached
+                    return events;
+                }            
+            } 
+        } 
     }
     
     public TopNResponse getTopN(TopNQuery query) throws IOException

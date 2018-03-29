@@ -15,7 +15,7 @@
  */
 
 // To run:
-// java -classpath "lib/*" -jar Test.jar
+// java -classpath "lib/*" -jar Test.jar 
 // 
 
 package Test;
@@ -40,7 +40,14 @@ public class Test
     public static void main(String[] args) throws Exception 
     {
         System.out.println("CloudGenix Controller SDK"); 
-        sdk = new CloudGenixSdk("demo@cloudgenix.com", "demo@cloudgenix.com", true);
+        String email = inputString("Email    :", false);
+        String pass  = inputString("Password :", false);
+        
+        System.out.println("");
+        System.out.println("Endpoints must be of the form https://api.cloudgenix.com:443");
+        String endpoint = inputString("Endpoint :", false);
+        
+        sdk = new CloudGenixSdk(email, pass, endpoint, true);
         
         while (runForever)
         {
@@ -283,6 +290,10 @@ public class Test
                     System.out.println(serialize(sdk.getEvents(eventQuery)));
                     break;
 
+                case "events all":
+                    System.out.println(serialize(sdk.getAllEvents(eventQuery)));
+                    break;
+                    
                 // </editor-fold>
                 
                 default:

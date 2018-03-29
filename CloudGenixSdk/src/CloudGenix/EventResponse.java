@@ -28,14 +28,17 @@ public class EventResponse
     public EventsCount alert;
 
     @SerializedName("included_count")
-    public Object includedCount;
+    public int includedCount;
 
     @SerializedName("total_count")
-    public Object totalCount;
+    public int totalCount;
 
     @SerializedName("items")
     public List<EventDetails> events;
  
+    @SerializedName("_offset")
+    public String offset;
+    
     public EventResponse()
     {
         this.alarm = null;
