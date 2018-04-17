@@ -18,11 +18,20 @@ package CloudGenix;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ProfileResponse 
-{    
+public class Client 
+{
     @SerializedName("id")
-    public String operatorId;
+    public String id;
+
+    @SerializedName("_etag")
+    public int etag;
     
     @SerializedName("tenant_id")
     public String tenantId;
+    
+    @SerializedName("name")
+    public String name;
+    
+    @SerializedName("canonical_name")
+    public String canonicalName;
 }

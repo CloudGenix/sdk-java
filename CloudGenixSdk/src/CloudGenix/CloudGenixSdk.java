@@ -36,6 +36,7 @@ public class CloudGenixSdk
     public String endpoint;
     public String authToken;
     public String tenantId;
+    public String operatorId;
     
     // </editor-fold>
     
@@ -227,6 +228,144 @@ public class CloudGenixSdk
         
         if (!getProfile()) throw new Exception("Unable to retrieve tenant ID");
         if (!getEndpoints()) throw new Exception("Unable to retrieve endpoints");
+        return true;
+    }
+    
+    public List<Client> getClients() throws Exception
+    {
+        // get clients
+        String url = this.endpoint + this.endpoints.getEndpoint("clients_t");
+        if (stringNullOrEmpty(url)) throw new Exception("Account not configured for MSP/ESP login");
+
+        url = url.replaceFirst("%s", this.tenantId);
+        
+        RestResponse resp = RestRequest.Send(
+            url,
+            "GET",
+            "application/json",
+            this.authHeaders,
+            null,
+            this.debug);
+        
+        if (resp == null) 
+        {
+            log("getClients no response from server for clients request");
+            return null;
+        }
+        
+        if (resp.statusCode > 299) 
+        {
+            log("getClients failure status " + resp.statusCode + " returned from server for clients request");
+            log(serialize(resp));
+            return null;
+        }
+        
+        Gson gson = new Gson(); 
+        java.lang.reflect.Type type = new TypeToken<ResourceResponse<Client>>(){}.getType();
+        ResourceResponse<Client> dataClient = gson.fromJson(resp.responseBody, type);
+        
+        log("getClients retrieved " + dataClient.items.size() + " client(s)");
+        
+        List<Client> clients = dataClient.items;
+        
+        // get permissions
+        url = this.endpoint + this.endpoints.getEndpoint("permissions_clients_d");
+        if (stringNullOrEmpty(url)) throw new Exception("Account not configured for MSP/ESP login");
+
+        url = url.replaceFirst("%s", this.tenantId);
+        url = url.replaceFirst("%s", this.operatorId);
+        
+        resp = RestRequest.Send(
+            url,
+            "GET",
+            "application/json",
+            this.authHeaders,
+            null,
+            this.debug);
+        
+        if (resp == null) 
+        {
+            log("getClients no response from server for permissions request");
+            return null;
+        }
+        
+        if (resp.statusCode > 299) 
+        {
+            log("getClients failure status " + resp.statusCode + " returned from server for permissions request");
+            log(serialize(resp));
+            return null;
+        }
+        
+        gson = new Gson(); 
+        type = new TypeToken<ResourceResponse<ClientPermission>>(){}.getType();
+        ResourceResponse<ClientPermission> dataPerms = gson.fromJson(resp.responseBody, type);
+        
+        log("getClients retrieved " + dataPerms.items.size() + " permission(s)");
+        
+        List<ClientPermission> perms = dataPerms.items;
+        
+        // filter and return
+        List<Client> filtered = new ArrayList();
+        for (int i = 0; i < clients.size(); i++) 
+        {
+            for (int j = 0; j < perms.size(); j++)
+            {
+                if (perms.get(j).clientId.equals(clients.get(i).id))
+                {
+                    filtered.add(clients.get(i));
+                    break;
+                }
+            }
+        }
+        
+        log("getClients returning " + filtered.size() + " permitted client(s)");
+        return filtered;        
+    }
+    
+    public Boolean loginAsClient(String clientId) throws Exception
+    {
+        if (stringNullOrEmpty(clientId)) throw new NullPointerException("clientId must not be null");
+        
+        String url = this.endpoint + this.endpoints.getEndpoint("login_clients");
+        if (stringNullOrEmpty(url)) throw new Exception("Account not configured for MSP/ESP login");
+
+        url = url.replaceFirst("%s", this.tenantId);
+        url = url.replaceFirst("%s", clientId);
+        
+        String reqBody = "{}";
+        
+        RestResponse resp = RestRequest.Send(
+            url,
+            "POST",
+            "application/json",
+            this.authHeaders,
+            reqBody,
+            this.debug);
+        
+        if (resp == null) 
+        {
+            log("loginAsClient no response from server");
+            return null;
+        }
+        
+        if (resp.statusCode > 299) 
+        {
+            log("loginAsClient failure status " + resp.statusCode + " returned from server");
+            log(serialize(resp));
+            return null;
+        }
+        
+        Gson gson = new Gson(); 
+        LoginResponse loginResp = gson.fromJson(resp.responseBody, LoginResponse.class);
+        this.authToken = loginResp.x_auth_token;
+        
+        this.authHeaders = new HashMap<String, String>();
+        this.authHeaders.put("x-auth-token", this.authToken);
+        
+        if (!getProfile()) throw new Exception("Unable to retrieve tenant ID");
+        if (!getEndpoints()) throw new Exception("Unable to retrieve endpoints");
+        
+        log("loginAsClient successfully logged in using client ID " + clientId);
         return true;
     }
     
@@ -1124,7 +1263,8 @@ public class CloudGenixSdk
         
         Gson gson = new Gson(); 
         ProfileResponse profileResp = gson.fromJson(resp.responseBody, ProfileResponse.class);
-        this.tenantId = profileResp.tenant_id;
+        this.tenantId = profileResp.tenantId;
+        this.operatorId = profileResp.operatorId;
         
         return true;
     }
