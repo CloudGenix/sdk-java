@@ -6,7 +6,7 @@ Java software development kit and test application for the CloudGenix Controller
 For issues, please contact joel@cloudgenix.com or open a support ticket with developers@cloudgenix.com.  We can also be found on the NetworkToCode Slack #cloudgenix channel at http://slack.networktocode.com.
 
 ## Before You Begin
-The CloudGenix Controller is only accessible to CloudGenix customers with a valid login using an IP address that has been whitelisted.  Please contact us at one of the aforementioned methods if you need to have your IP addresses whitelisted.
+The CloudGenix Controller is only accessible to CloudGenix customers with a valid login using an IP address that is in the list of allowed IPs. Please contact us at one of the aforementioned methods if you need to have your IP addresses added to the list of allowed IPs.
 
 ## New
 - Support for MSP/ESP login.  Use ```getClients()``` method, followed by ```loginAsClient()```.
